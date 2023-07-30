@@ -4,6 +4,44 @@ import cv2
 import numpy as np
 import threading
 
+
+def detect_eyes(image):
+    mp_face_detection = mp.solutions.face_detection
+    mp_drawing = mp.solutions.drawing_utils
+
+    # 初始化MediaPipe Face Detection模型
+    face_detection = mp_face_detection.FaceDetection()
+
+    # 轉換為RGB格式
+    image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+    # 進行臉部檢測
+    results = face_detection.process(image_rgb)
+
+    # 檢測到的臉部數量
+    if results.detections:
+        for detection in results.detections:
+            bboxC = detection.location_data.relative_bounding_box
+            ih, iw, _ = image.shape
+            bbox = int(bboxC.xmin * iw), int(bboxC.ymin * ih), int(bboxC.width * iw), int(bboxC.height * ih)
+
+            # 繪製臉部檢測框
+            cv2.rectangle(image, bbox, (0, 255, 0), 2)
+
+            # 提取眼睛關鍵點
+            left_eye_x = int(detection.location_data.relative_keypoints[0].x * iw)
+            left_eye_y = int(detection.location_data.relative_keypoints[0].y * ih)
+            right_eye_x = int(detection.location_data.relative_keypoints[1].x * iw)
+            right_eye_y = int(detection.location_data.relative_keypoints[1].y * ih)
+
+            # 繪製眼睛關鍵點
+            cv2.circle(image, (left_eye_x, left_eye_y), 5, (255, 0, 0), -1)
+            cv2.circle(image, (right_eye_x, right_eye_y), 5, (255, 0, 0), -1)
+
+            # 在這裡你可以進一步處理眼睛位置的資訊，例如應用Gaze Tracking等
+
+    return image
+
 def speech_recognition_continuous(stop_event):
     recognizer = sr.Recognizer()
 
@@ -126,6 +164,7 @@ def run_pose_estimation(stop_event):
                 record[1,POSE_TYPES[pose_type]] += 1
 
             # 顯示影像
+            image = detect_eyes(image)
             cv2.imshow('MediaPipe Pose', image)
             # cv2.imwrite("frame%d.jpg" % count, image) 
             ret,image = cap.read()
