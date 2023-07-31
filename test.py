@@ -69,9 +69,6 @@ def speech_recognition_continuous(stop_event):
 
 
 def run_pose_estimation(stop_event):
-    import mediapipe as mp
-    import cv2
-    import numpy as np
 
     #選擇第一隻攝影機
     cap = cv2.VideoCapture(0)
