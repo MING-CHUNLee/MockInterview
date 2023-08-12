@@ -29,6 +29,7 @@ def run_pose_estimation():
         'hand_crossed_chest':6
     }
 
+    no_detection_count = 0
     record=np.zeros([2,7], dtype=object)
     record[0][0]='hand_on_hip'
     record[0][1]='hand_above_head'
@@ -54,6 +55,10 @@ def run_pose_estimation():
 
             # 得到結果
             pose_results = pose.process(image)
+
+            # 如果沒有畫面標記
+            if pose_results.pose_landmarks is None:
+                    no_detection_count += 1
 
             # 畫出關鍵點
             if pose_results.pose_landmarks is not None:
@@ -100,6 +105,7 @@ def run_pose_estimation():
 
                 record[1,POSE_TYPES[pose_type]] += 1
                 print('pose_type:', pose_type)
+                
 
             # 顯示影像
             cv2.imshow('MediaPipe Pose', image)
@@ -111,6 +117,7 @@ def run_pose_estimation():
 
         cap.release()
         print(record)
+        print('no_detection_count ',no_detection_count )
         cv2.destroyAllWindows()
 
 # 主程式
