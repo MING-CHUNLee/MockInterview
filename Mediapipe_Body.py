@@ -14,11 +14,10 @@ def run_pose_estimation():
     mp_drawing_styles = mp.solutions.drawing_styles
     mp_pose = mp.solutions.pose
 
-    count=0
+    # count=0
 
 
     # 定義姿勢類型與所對應的索引
-  # 定義姿勢類型與所對應的索引
     POSE_TYPES = {
         'hand_on_hip': 0,
         'hand_above_head': 1,
@@ -29,7 +28,8 @@ def run_pose_estimation():
         'hand_crossed_chest':6
     }
 
-    no_detection_count = 0
+    no_detection_count = [0,0,0]
+    action=[0,0]
     record=np.zeros([2,7], dtype=object)
     record[0][0]='hand_on_hip'
     record[0][1]='hand_above_head'
@@ -58,7 +58,14 @@ def run_pose_estimation():
 
             # 如果沒有畫面標記
             if pose_results.pose_landmarks is None:
-                    no_detection_count += 1
+                no_detection_count[0]= no_detection_count[1]
+                no_detection_count[1]= 1
+                if ( no_detection_count[0]==0):
+                        no_detection_count[2] += 1
+            else:
+                no_detection_count[0]= no_detection_count[1]              
+                no_detection_count[1]= 0
+                    
 
             # 畫出關鍵點
             if pose_results.pose_landmarks is not None:
@@ -69,6 +76,8 @@ def run_pose_estimation():
 
                 # 將座標轉換為 numpy array 格式
                 data = np.array([[landmark.x, landmark.y, landmark.z] for landmark in landmarks])
+
+    
 
                 # 取得需要的部分座標
                 r_shoulder = data[mp_pose.PoseLandmark.RIGHT_SHOULDER.value]
@@ -102,22 +111,24 @@ def run_pose_estimation():
                 # 判斷雙手是否交叉於胸前
                 if left_wrist[0] < r_shoulder[0] and right_wrist[0] > r_shoulder[0]:
                     pose_type = 'hand_crossed_chest'
-
-                record[1,POSE_TYPES[pose_type]] += 1
-                print('pose_type:', pose_type)
                 
-
+                print('pose_type:', pose_type)
+                action[0]=action[1]
+                action[1]=pose_type
+                if (action[0] !=action[1]):
+                    record[1,POSE_TYPES[pose_type]] += 1
+                
             # 顯示影像
             cv2.imshow('MediaPipe Pose', image)
-            # cv2.imwrite("frame%d.jpg" % count, image) 
+            # cv2.imwrite("image%d.jpg" % count, image) 
             ret,image = cap.read()
-            count += 1
+            # count += 1
             if cv2.waitKey(1) & 0xFF  == ord('q'):
                 break
 
         cap.release()
         print(record)
-        print('no_detection_count ',no_detection_count )
+        print('no_detection_count ',no_detection_count[2] )
         cv2.destroyAllWindows()
 
 # 主程式
