@@ -1,0 +1,45 @@
+# 忽略虚拟环境目录（例如，venv、virtualenv、.venv等）
+__pycache__
+venv/
+.env/
+
+# 忽略生成的文件和目录
+*.pyc
+*.pyo
+__pycache__/
+build/
+dist/
+*.egg-info/
+*.egg
+
+# 忽略编辑器/IDE生成的文件和目录
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*~
+*.log
+
+# 忽略Jupyter Notebook生成的文件
+.ipynb_checkpoints/
+
+# 忽略本地配置文件
+*.config
+
+# 忽略pytest生成的缓存文件
+__pycache__/
+.cacherc
+
+# 忽略pytest的__pycache__目录
+.cacherc
+.cache/
+.pytest_cache/
+
+# 忽略Python日志文件
+*.log
+
+# 忽略pip的缓存目录
+pip-wheel-metadata/
