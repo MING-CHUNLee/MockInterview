@@ -124,11 +124,10 @@ class MediapipeBodyVideo:
                     break
 
             cap.release()
-
+            res={}
             for i in range(7):
-                if(record[1][i]>0):
-                    print(record[0][i],end=',')
-            # print('no_detection_count ',no_detection_count[2] )
+                res[record[0][i]] = record[1][i]
+            print(res)
             cv2.destroyAllWindows()
 
 # 主程式
